@@ -2,7 +2,7 @@
 #include<math.h>
 #include<stdio.h>
 
-#define IQ 8 // how many steps in future (1-8) 
+#define IQ 0 // how many steps in future (1-8) 
 
 //GLobal Var
 int GameBoard[3][3];
@@ -89,72 +89,106 @@ void input(int *i , int *j)
 //-----------------------------------------------------------------
 void copy_board(int board[3][3],int copy[3][3])
 {
-     for(int a = 0 ; a < 3 ; a++)
+    for(int a = 0 ; a < 3 ; a++)
     {
         for(int b = 0 ; b < 3 ; b++)
         {            
-                board[a][b] = GameBoard[a][b];
+            copy[a][b] = board[a][b];
         }
     }
 }
 
 
-int check_value(int new_val,int value,int Max)// checks whether value is better than previous value according to  max
-{   if(Max && new_val>value) //min node
-    {
-        return new_val;
-    }
-
-    else if( !Max && new_val < value)//max node
-    {
-        return new_val  ;
-    }
-    return value;
-}
 
 
-int minimax(int board[3][3], int depth, int *i , int *j )
-{   if(depth > IQ)  //how many steps to look into the future
-        return 0;
+
+
+int minimax(int board[3][3], int depth, int Max )
+{   //if(depth > IQ)  //how many steps to look into the future
+       // return 0;
+    if(checkWin(board))
+        return checkWin(board);
     int tempBoard[3][3]; // to continue the chain
-    int Max = (depth+1)%2 ; // first is max then min  so max = 1 in odd places
+    if( _turn + depth == 8 )
+        return 0; // first is max then min  so max = 1 in odd places
+    
     int value ;
     
     //init _value
     if(Max)
-        value = -1000;
-    else 
-        value = 1000;
-    
-    for(int a = 0 ; a < 3 ; a++)
-    {
-        for(int b = 0 ; b < 3 ; b++)
-        {   
-            if(board[a][b]==0 && _turn < 9)
-            {
-                copy_board(board, tempBoard);
-                tempBoard[a][b] = _player_turn;// move ahead since its 
+    {   value = -1000;
+        for(int a = 0 ; a < 3 ; a++)
+        {
+            for(int b = 0 ; b < 3 ; b++)
+            {   
+                if(board[a][b] == 0)
+                {   
+                    copy_board(board, tempBoard);
+                    tempBoard[a][b] = 1;
 
-                if(checkWin(tempBoard)==_player_turn)
-                    {   
-                        value =  _player_turn;
-                        if(value == 1) // if u won return position of mov
-                        {
-                            *i = a;
-                            *j = b;
-                        }
-                    }
-                
-                else   
-                    {   //return best value from the tree under and the position 
-                        value = check_value( minimax(tempBoard, depth+1, i , j ),value,Max); 
-                        *i = a;
-                        *j = b;
-                    }
+                    // move ahead since its 
+
+                   //return best value from the tree under and the position 
+                        int temp = minimax(tempBoard, depth+1 , 0); 
+                        value = fmax(value,temp); 
+                    
+                }
             }
         }
+        return value;
+    } 
+    else //min
+    {
+        value = 1000;
+        for(int a = 0 ; a < 3 ; a++)
+        {
+            for(int b = 0 ; b < 3 ; b++)
+            {   
+                if(board[a][b] == 0)
+                {   
+                    copy_board(board, tempBoard);
+                    tempBoard[a][b] = -1;
+
+                    // move ahead since its 
+                      
+                       //return best value from the tree under and the position 
+                        int temp = minimax(tempBoard, depth+1 ,1); 
+                        value = fmin(value,temp);
+                    
+                }
+            }
+        }
+        return value;
+
+    }    
+    
+}
+
+void think(int board[3][3],int *a,int *b)
+{   int tempBoard[3][3];
+    int value = -1000;
+    //drawBoard(board);
+   
+    for(int i = 0 ; i < 3 ;i ++)
+    {
+        for(int j = 0 ; j < 3 ;j++)
+        {  
+            
+            if( board[i][j] == 0 )
+            {  // printf( "\n %d %d",i , j);
+                copy_board(board,tempBoard);
+                tempBoard[i][j] = 1;
+
+                int temp = minimax(tempBoard,0,0);
+                if( value < temp)
+                {   value = temp;
+                    //printf("...");
+                    *a = i;
+                    *b = j;
+                }
+           }
+        }
     }
-    return value;
 }
 
 
@@ -162,14 +196,14 @@ void Ai(int *i , int *j)
 {   
     int ai_board[3][3];
     copy_board(GameBoard,ai_board);
-    minimax(ai_board,0,i,j);
+    think(ai_board, i , j);
     printf("%d %d \n",*i, *j);
 }
 
 
 
 
-//-`----------------------------------------------------------------
+//-----------------------------------------------------------------
 
 void Game()
 {   int Win = 0 ;
