@@ -1,17 +1,19 @@
+
+
 #include<stdio.h>
 
 
 #define MaT 3
 #define IQ 6 // how many steps in future (1-8) 
 
+
+
+//GLobal Var
 int GameBoard[MaT][MaT];
 int _player_turn = 1;//   1 or -1
 int _turn = 0;
 
-
-
 //initialising board values
-
 void initBoard()
 {
     for(int i = 0 ; i < 3; i++)
@@ -23,14 +25,13 @@ void initBoard()
     }
 }
 
-
-//move of player ai at i , j spot  
+// move of player/ai at i , j spot  
 int move(int board[3][3] ,int i, int j)
 {
     // if empty move
-    if( board[i][j]== 0 || _turn <= 9)
+    if( board[i][j]== 0 && _turn <= 9)
     {   
-        board[i][j] =_player_turn;
+        board[i][j] = _player_turn;
         _turn++;
         //switch player
         if(_player_turn == 1)
@@ -50,18 +51,13 @@ void drawBoard()
 {
     printf(" %d | %d | %d \n",GameBoard[0][0],GameBoard[0][1],GameBoard[0][2]);
     printf(" %d | %d | %d \n",GameBoard[1][0],GameBoard[1][1],GameBoard[1][2]);
-    printf(" %d | %d | %d \n",GameBoard[2][0],GameBoard[2][1],GameBoard[2][2]);
+    printf(" %d | %d | %d \n\n",GameBoard[2][0],GameBoard[2][1],GameBoard[2][2]);
     
 }
 
-/*typedef struct node{
- int data;
- int depth;
- struct node (*child)[8]; 
-}node;*/
 
 
-
+// all 8 conditions of winning
 int checkWin(int board[3][3])
 {
     if(board[0][0]==board[0][1]&&board[0][0]==board[0][2])      //horizontal series
@@ -86,24 +82,37 @@ int checkWin(int board[3][3])
     else return 0;
 }
 
-int cost(int board[3][3])
+
+
+
+//player input
+void input(int *i , int *j)
 {
-    
+    scanf("%d %d", i , j);
 }
 
-//void initNode( node *New , int depth)
-
-
-void createTree(int board[3][3])
-{
-
+void Game()
+{   int Win = 0 ;
+    initBoard();
+    int i , j;
+    while(!Win)
+    {
+        drawBoard();
+        if(_turn%2)
+            input(&i,&j);
+        else 
+            input(&i,&j);//ai(&i,&j);
+        move(GameBoard , i , j );
+        Win = checkWin(GameBoard);
+    }
+    drawBoard();
 }
+
+
 int main()
 {
-    //int *gameBoard[3] = GameBoard;
-    initBoard();
-    drawBoard();
-    printf("%d",checkWin(GameBoard));
+    Game();
+
     return 0;
 
 }
