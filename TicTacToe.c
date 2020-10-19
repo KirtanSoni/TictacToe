@@ -1,16 +1,12 @@
 
-
+#include<math.h>
 #include<stdio.h>
 
-
-#define MaT 3
-#define IQ 6 // how many steps in future (1-8) 
-
-
+#define IQ 8 // how many steps in future (1-8) 
 
 //GLobal Var
-int GameBoard[MaT][MaT];
-int _player_turn = 1;//   1 or -1
+int GameBoard[3][3];
+int _player_turn = -1;//   1  = ai and -1 = player
 int _turn = 0;
 
 //initialising board values
@@ -81,15 +77,99 @@ int checkWin(int board[3][3])
         return board[1][1];
     else return 0;
 }
-
-
-
-
 //player input
 void input(int *i , int *j)
 {
     scanf("%d %d", i , j);
 }
+
+
+
+//AI
+//-----------------------------------------------------------------
+void copy_board(int board[3][3],int copy[3][3])
+{
+     for(int a = 0 ; a < 3 ; a++)
+    {
+        for(int b = 0 ; b < 3 ; b++)
+        {            
+                board[a][b] = GameBoard[a][b];
+        }
+    }
+}
+
+
+int check_value(int new_val,int value,int Max)// checks whether value is better than previous value according to  max
+{   if(Max && new_val>value) //min node
+    {
+        return new_val;
+    }
+
+    else if( !Max && new_val < value)//max node
+    {
+        return new_val  ;
+    }
+    return value;
+}
+
+
+int minimax(int board[3][3], int depth, int *i , int *j )
+{   if(depth > IQ)  //how many steps to look into the future
+        return 0;
+    int tempBoard[3][3]; // to continue the chain
+    int Max = (depth+1)%2 ; // first is max then min  so max = 1 in odd places
+    int value ;
+    
+    //init _value
+    if(Max)
+        value = -1000;
+    else 
+        value = 1000;
+    
+    for(int a = 0 ; a < 3 ; a++)
+    {
+        for(int b = 0 ; b < 3 ; b++)
+        {   
+            if(board[a][b]==0 && _turn < 9)
+            {
+                copy_board(board, tempBoard);
+                tempBoard[a][b] = _player_turn;// move ahead since its 
+
+                if(checkWin(tempBoard)==_player_turn)
+                    {   
+                        value =  _player_turn;
+                        if(value == 1) // if u won return position of mov
+                        {
+                            *i = a;
+                            *j = b;
+                        }
+                    }
+                
+                else   
+                    {   //return best value from the tree under and the position 
+                        value = check_value( minimax(tempBoard, depth+1, i , j ),value,Max); 
+                        *i = a;
+                        *j = b;
+                    }
+            }
+        }
+    }
+    return value;
+}
+
+
+void Ai(int *i , int *j)
+{   
+    int ai_board[3][3];
+    copy_board(GameBoard,ai_board);
+    minimax(ai_board,0,i,j);
+    printf("%d %d \n",*i, *j);
+}
+
+
+
+
+//-`----------------------------------------------------------------
 
 void Game()
 {   int Win = 0 ;
@@ -98,10 +178,10 @@ void Game()
     while(!Win)
     {
         drawBoard();
-        if(_turn%2)
+        if(_turn % 2 == 0)
             input(&i,&j);
-        else 
-            input(&i,&j);//ai(&i,&j);
+        else
+            Ai(&i,&j);//ai(&i,&j);
         move(GameBoard , i , j );
         Win = checkWin(GameBoard);
     }
@@ -112,7 +192,6 @@ void Game()
 int main()
 {
     Game();
-
     return 0;
 
 }
