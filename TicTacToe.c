@@ -23,7 +23,7 @@ void initBoard()
 // move of player/ai at i , j spot  
 int move(int board[3][3] ,int i, int j)
 {
-    // if empty move
+    // if empty , move
     if( board[i][j]== 0 && _turn <= 9)
     {   
         board[i][j] = _player_turn;
@@ -118,17 +118,15 @@ void copy_board(int board[3][3],int copy[3][3])
 
 
 int minimax(int board[3][3], int depth, int Max )
-{   //if(depth > IQ)  //how many steps to look into the future
-       // return 0;
-    if(checkWin(board))
+{   
+    if(checkWin(board)) //terminating condition
         return checkWin(board);
-    int tempBoard[3][3]; // to continue the chain
-    if( _turn + depth == 8 )
-        return 0; // first is max then min  so max = 1 in odd places
+    if( _turn + depth == 8 )//terminating condition
+        return 0;
     
+    int tempBoard[3][3]; // to continue the chain
     int value ;
     
-    //init _value
     if(Max)
     {   value = -1000;
         for(int a = 0 ; a < 3 ; a++)
@@ -163,7 +161,6 @@ int minimax(int board[3][3], int depth, int Max )
                     copy_board(board, tempBoard);
                     tempBoard[a][b] = -1;
 
-                    // move ahead since its 
                       
                        //return best value from the tree under and the position 
                         int temp = minimax(tempBoard, depth+1 ,1); 
@@ -181,22 +178,20 @@ int minimax(int board[3][3], int depth, int Max )
 void think(int board[3][3],int *a,int *b)
 {   int tempBoard[3][3];
     int value = -1000;
-    //drawBoard(board);
-   
     for(int i = 0 ; i < 3 ;i ++)
     {
         for(int j = 0 ; j < 3 ;j++)
         {  
             
             if( board[i][j] == 0 )
-            {  // printf( "\n %d %d",i , j);
+            { 
                 copy_board(board,tempBoard);
                 tempBoard[i][j] = 1;
 
                 int temp = minimax(tempBoard,0,0);
                 if( value < temp)
                 {   value = temp;
-                    //printf("...");
+                    
                     *a = i;
                     *b = j;
                 }
@@ -229,7 +224,7 @@ void Game()
         if(_turn % 2 == 0)
             input(&i,&j);
         else
-            Ai(&i,&j);//ai(&i,&j);
+            Ai(&i,&j);
         move(GameBoard , i , j );
         Win = checkWin(GameBoard);
     }
