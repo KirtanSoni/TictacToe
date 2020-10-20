@@ -206,7 +206,7 @@ void Ai(int *i , int *j)
     int ai_board[3][3];
     copy_board(GameBoard,ai_board);
     think(ai_board, i , j);
-    printf("Ai: %d %d \n",*i, *j);
+    printf("Ai: %d %d \n\n",*i, *j);
 }
 
 
@@ -220,9 +220,12 @@ void Game()
     int i , j;
     while(!Win&& (_turn<9))
     {
-        drawBoard();
+        
         if(_turn % 2 == 0)
+            {
+            drawBoard();
             input(&i,&j);
+            }
         else
             Ai(&i,&j);
         move(GameBoard , i , j );
@@ -242,5 +245,4 @@ int main()
 {
     Game();
     return 0;
-
 }
