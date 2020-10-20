@@ -1,4 +1,3 @@
-
 #include<math.h>
 #include<stdio.h>
 
@@ -44,10 +43,25 @@ int move(int board[3][3] ,int i, int j)
 }
 
 void drawBoard()
-{
-    printf(" %d | %d | %d \n",GameBoard[0][0],GameBoard[0][1],GameBoard[0][2]);
-    printf(" %d | %d | %d \n",GameBoard[1][0],GameBoard[1][1],GameBoard[1][2]);
-    printf(" %d | %d | %d \n\n",GameBoard[2][0],GameBoard[2][1],GameBoard[2][2]);
+{   
+    char board[3][3];
+
+    for( int i = 0 ; i<3 ; i++)
+    {
+         for( int j = 0 ; j<3 ; j++)
+         {
+            if(GameBoard[i][j] == 0)
+                board[i][j] = ' ';
+            else if(GameBoard[i][j] == 1)
+                board[i][j] = 'X';
+            else 
+                board[i][j] = 'O';
+         }
+    }
+
+    printf("\n %c | %c | %c \n",board[0][0],board[0][1],board[0][2]);
+    printf(" %c | %c | %c \n",board[1][0],board[1][1],board[1][2]);
+    printf(" %c | %c | %c \n",board[2][0],board[2][1],board[2][2]);
     
 }
 
@@ -79,7 +93,7 @@ int checkWin(int board[3][3])
 }
 //player input
 void input(int *i , int *j)
-{
+{   printf("player:");
     scanf("%d %d", i , j);
 }
 
@@ -197,7 +211,7 @@ void Ai(int *i , int *j)
     int ai_board[3][3];
     copy_board(GameBoard,ai_board);
     think(ai_board, i , j);
-    printf("%d %d \n",*i, *j);
+    printf("Ai: %d %d \n",*i, *j);
 }
 
 
@@ -209,7 +223,7 @@ void Game()
 {   int Win = 0 ;
     initBoard();
     int i , j;
-    while(!Win)
+    while(!Win&& (_turn<9))
     {
         drawBoard();
         if(_turn % 2 == 0)
@@ -220,6 +234,12 @@ void Game()
         Win = checkWin(GameBoard);
     }
     drawBoard();
+    if(Win == -1)
+        printf("You won!");
+    else if( Win == 1)
+        printf("Ai Won!");
+    else 
+        printf("Tie!");
 }
 
 
@@ -229,4 +249,3 @@ int main()
     return 0;
 
 }
-
